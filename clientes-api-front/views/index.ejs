@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lista de Clientes</title>
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+    <a href="/">
+        <button class="excluir">Sair</button>
+    </a><br>
+
+    <h1>Lista de Clientes</h1>
+
+    <a href="/novo">
+        <button>Novo Cliente</button>
+    </a><br>
+
+    <form action="/clientes" method="GET">
+        <label for="search">Pesquisar Cliente</label>
+        <input type="text" name="search" placeholder="Pesquisar por Nome" value="<%= search || '' %>">
+        <button type="submit">Pesquisar</button>
+    </form>
+
+    <table>
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Nome</th>
+                <th>Data/Nasc</th>
+                <th>CPF</th>
+                <th>Endereço</th>
+                <th>Telefone</th>
+                <th>Email</th>
+                <th class="centralizado">Ações</th>
+            </tr>
+        </thead>
+        <tbody>
+            <% clientes.forEach(cliente => { %>
+            <tr>
+                <td><%= cliente.id %></td>
+                <td><%= cliente.nome %></td>
+                <td><%= cliente.nascimento %></td>
+                <td><%= cliente.cpf %></td>
+                <td><%= cliente.endereco %></td>
+                <td><%= cliente.telefone %></td>
+                <td><%= cliente.email %></td>
+                <td class="centralizado">
+                    <form action="/editar/<%= cliente.id %>" method="GET" style="display:inline;">
+                        <button type="submit" class="editar">Editar</button>
+                    </form>
+                    <button type="button" class="excluir" onclick="confirmarExclusao('<%= cliente.id %>')">Excluir</button>
+                </td>
+            </tr>
+            <% }) %>
+        </tbody>
+    </table>
+
+    <!-- Paginação com botões numerados -->
+    <div class="pagination">
+        <% for (let i = 1; i <= totalPages; i++) { %>
+            <% if (i === page) { %>
+                <strong><%= i %></strong>
+            <% } else { %>
+                <a href="/clientes/?page=<%= i %>&search=<%= search || '' %>"><%= i %></a>
+            <% } %>
+        <% } %>
+    </div>
+
+    <!-- Modal de Confirmação -->
+    <div id="modalConfirmacao" class="modal">
+        <div class="modal-content">
+            <p>Deseja excluir este cliente?</p>
+            <button id="confirmar" class="excluir">Sim</button>
+            <button id="cancelar">Não</button>
+        </div>
+    </div>
+
+    <footer>
+        <p>Desenvolvido por [Pedro Fellipe Cruz Antunes - 20202SI0024]</p>
+    </footer>
+
+    <script>
+        function confirmarExclusao(clienteId) {
+            var modal = document.getElementById("modalConfirmacao");
+            modal.style.display = "block";
+
+            var confirmar = document.getElementById("confirmar");
+            confirmar.onclick = function() {
+                var form = document.createElement('form');
+                form.method = 'POST';
+                form.action = '/excluir/' + clienteId;
+                document.body.appendChild(form);
+                form.submit();
+            };
+
+            var cancelar = document.getElementById("cancelar");
+            cancelar.onclick = function() {
+                modal.style.display = "none";
+            };
+        }
+
+        window.onclick = function(event) {
+            var modal = document.getElementById("modalConfirmacao");
+            if (event.target == modal) {
+                modal.style.display = "none";
+            }
+        }
+    </script>
+</body>
+</html>
